@@ -1,8 +1,12 @@
 asgiref==3.5.2
+Babel==2.10.3
 Django==4.1.2
+django-money==3.0.0
 django-rest-framework==0.1.0
 djangorestframework==3.14.0
 psycopg2==2.9.5
+py-moneyed==2.0
 python-dotenv==0.21.0
 pytz==2022.5
 sqlparse==0.4.3
+typing-extensions==4.4.0
