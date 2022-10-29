@@ -26,7 +26,7 @@ class Payment(models.Model):
 class APIUsage(models.Model):
     user = models.ForeignKey(SBUser, on_delete=models.CASCADE)
     api_name = models.CharField(max_length=20)
-    count = models.IntegerField(default=0)
+    count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return str(self.count)
