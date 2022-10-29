@@ -62,13 +62,12 @@ def create_order(request):
     data = request.data
 
     amount = int(float(data['amount']))
+
     key_id = str(os.getenv('KEY_ID'))
     key_secret = str(os.getenv('KEY_SECRET'))
     client = razorpay.Client(auth=(key_id, key_secret))
 
-    data = {"amount": amount, "currency": "INR"}
-    payment = client.order.create(data=data)
-
+    payment = client.order.create({'amount': amount, 'currency': 'INR'})
     return Response({'order_id': payment['id'], 'amount': payment['amount'], 'currency': payment['currency']})
 
 
