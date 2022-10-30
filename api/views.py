@@ -5,22 +5,33 @@ from rest_framework import status
 from .models import SBUser, Payment, APIUsage
 import razorpay
 import os
+import asyncio
+from .scrape import main
 
 # Create your views here.
 
 
-def scrape_data(sb_user):
+def scrape_data(user_name, password):
 
-    # Make scrape api call here
+    result = asyncio.run(main(user_name, password))
+    print(result)
+    if type(result) is dict:
+        return result
+
+    try:
+        sb_user = SBUser.objects.get(user_name=user_name)
+    except SBUser.DoesNotExist:
+        sb_user = SBUser(user_name=user_name)
+        sb_user.save()
 
     try:
         api_usage = APIUsage.objects.get(user=sb_user)
         api_usage.count = api_usage.count + 1
         api_usage.save()
     except APIUsage.DoesNotExist:
-        api_usage = APIUsage(user=sb_user, api_name="fetchAttendance", count=0)
+        api_usage = APIUsage(user=sb_user, api_name="fetchAttendance", count=1)
         api_usage.save()
-    return 'This is a sample scraped data'
+    return result
 
 
 @api_view(['POST'])
@@ -46,14 +57,12 @@ def fetch_attendance(request):
         if payment_status is False:
             return Response({'message': 'The user needs to pay to continue'})
 
-        message = scrape_data(sb_user)
-        return Response({'message': message})
+        message = scrape_data(sb_user, user_name, password)
+        return Response(message)
 
     except SBUser.DoesNotExist:
-        sb_user = SBUser(user_name=user_name)
-        sb_user.save()
-        message = scrape_data(sb_user)
-        return Response({'message': message})
+        message = scrape_data(user_name, password)
+        return Response(message)
 
 
 @api_view(['POST'])
